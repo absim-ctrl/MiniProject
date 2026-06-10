@@ -1,51 +1,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <string.h>
 
 #define HEIGHT 24
 #define WIDTH 80
 #define MAXSIZE 100
 
-typedef enum {
-    LINE = 1,
-    RECTANGLE = 2,
-    CIRCLE = 3,
-    TRIANGLE = 4
-} ShapeType;
-
+// Flat structure representing any shape
 typedef struct {
-    int cx;
-    int cy;
+    int type; // 1: Line, 2: Rectangle, 3: Circle, 4: Triangle
+    int x1, y1;
+    int x2, y2;
+    int x3, y3;
     int radius;
-}Circle;
-
-typedef struct {
-    int x1, y1, x2, y2, x3, y3;
-} Triangle;
-
-typedef struct {
-    int x1, y1, x2, y2;
-} Rectngle;
-
-typedef struct{
-    int x1,x2,y1,y2;
-}Line;
-
-typedef struct{
-    int id;
-    ShapeType type; 
-    union {
-        Rectngle rectangle;
-        Circle circle;
-        Triangle triangle;
-        Line line;
-    } data;
 } Shape;
 
 char canvas[HEIGHT][WIDTH];
-int shapeCount = 0;
 Shape shape[MAXSIZE];
+int shapeCount = 0;
 
 void clearPicture() {
     for (int y = 0; y < HEIGHT; y++) {
@@ -54,15 +26,17 @@ void clearPicture() {
         }
     }
 }
-void setPixel(int x,int y){
-    if(x>=0 && x<WIDTH  && y>=0 && y<HEIGHT){
-        canvas[y][x]='*';
+
+void setPixel(int x, int y) {
+    if (x >= 0 && x < WIDTH && y >= 0 && y < HEIGHT) {
+        canvas[y][x] = '*';
     }   
 }
-void displayPicture(){
-    for(int y=0;y<HEIGHT;y++){
-        for(int x=0;x<WIDTH;x++){
-            printf("%c",canvas[y][x]); 
+
+void displayPicture() {
+    for (int y = 0; y < HEIGHT; y++) {
+        for (int x = 0; x < WIDTH; x++) {
+            printf("%c", canvas[y][x]); 
         }
         printf("\n");
     }
@@ -91,7 +65,6 @@ void drawLine(int x1, int y1, int x2, int y2) {
 }
 
 void drawCircle(int cx, int cy, int radius) {
-    
     float aspect_ratio = 2.0;
     int x_radius = (int)(radius * aspect_ratio);
 
@@ -123,24 +96,18 @@ void drawRectangle(int x1, int y1, int x2, int y2) {
     drawLine(x1, y2, x1, y1);
 }
 
-
 void renderShapes() {
     clearPicture();
     for (int i = 0; i < shapeCount; i++) {
         Shape s = shape[i];
-        switch (s.type) {
-            case LINE:
-                drawLine(s.data.line.x1, s.data.line.y1, s.data.line.x2, s.data.line.y2);
-                break;
-            case RECTANGLE:
-                drawRectangle(s.data.rectangle.x1, s.data.rectangle.y1, s.data.rectangle.x2, s.data.rectangle.y2);
-                break;
-            case CIRCLE:
-                drawCircle(s.data.circle.cx, s.data.circle.cy, s.data.circle.radius);
-                break;
-            case TRIANGLE:
-                drawTriangle(s.data.triangle.x1, s.data.triangle.y1, s.data.triangle.x2, s.data.triangle.y2, s.data.triangle.x3, s.data.triangle.y3);
-                break;
+        if (s.type == 1) {
+            drawLine(s.x1, s.y1, s.x2, s.y2);
+        } else if (s.type == 2) {
+            drawRectangle(s.x1, s.y1, s.x2, s.y2);
+        } else if (s.type == 3) {
+            drawCircle(s.x1, s.y1, s.radius);
+        } else if (s.type == 4) {
+            drawTriangle(s.x1, s.y1, s.x2, s.y2, s.x3, s.y3);
         }
     }
 }
@@ -179,23 +146,23 @@ int main() {
             scanf("%d", &shapeType);
 
             Shape newShape;
-            newShape.type = (ShapeType)shapeType;
+            newShape.type = shapeType;
 
-            if (shapeType == LINE) {
+            if (shapeType == 1) {
                 printf("Enter x1 y1 x2 y2: ");
-                scanf("%d %d %d %d", &newShape.data.line.x1, &newShape.data.line.y1, &newShape.data.line.x2, &newShape.data.line.y2);
+                scanf("%d %d %d %d", &newShape.x1, &newShape.y1, &newShape.x2, &newShape.y2);
             }
-            else if (shapeType == RECTANGLE) {
+            else if (shapeType == 2) {
                 printf("Enter top-left x y and bottom-right x y: ");
-                scanf("%d %d %d %d", &newShape.data.rectangle.x1, &newShape.data.rectangle.y1, &newShape.data.rectangle.x2, &newShape.data.rectangle.y2);
+                scanf("%d %d %d %d", &newShape.x1, &newShape.y1, &newShape.x2, &newShape.y2);
             }
-            else if (shapeType == CIRCLE) {
+            else if (shapeType == 3) {
                 printf("Enter center x y and radius: ");
-                scanf("%d %d %d", &newShape.data.circle.cx, &newShape.data.circle.cy, &newShape.data.circle.radius);
+                scanf("%d %d %d", &newShape.x1, &newShape.y1, &newShape.radius);
             }
-            else if (shapeType == TRIANGLE) {
+            else if (shapeType == 4) {
                 printf("Enter x1 y1 x2 y2 x3 y3: ");
-                scanf("%d %d %d %d %d %d", &newShape.data.triangle.x1, &newShape.data.triangle.y1, &newShape.data.triangle.x2, &newShape.data.triangle.y2, &newShape.data.triangle.x3, &newShape.data.triangle.y3);
+                scanf("%d %d %d %d %d %d", &newShape.x1, &newShape.y1, &newShape.x2, &newShape.y2, &newShape.x3, &newShape.y3);
             }
             else {
                 printf("Invalid shape type.\n\n");
@@ -238,21 +205,21 @@ int main() {
             }
             
             Shape *s = &shape[index];
-            if (s->type == LINE) {
+            if (s->type == 1) {
                 printf("Enter x1 y1 x2 y2: ");
-                scanf("%d %d %d %d", &s->data.line.x1, &s->data.line.y1, &s->data.line.x2, &s->data.line.y2);
+                scanf("%d %d %d %d", &s->x1, &s->y1, &s->x2, &s->y2);
             }
-            else if (s->type == RECTANGLE) {
+            else if (s->type == 2) {
                 printf("Enter top-left x y and bottom-right x y: ");
-                scanf("%d %d %d %d", &s->data.rectangle.x1, &s->data.rectangle.y1, &s->data.rectangle.x2, &s->data.rectangle.y2);
+                scanf("%d %d %d %d", &s->x1, &s->y1, &s->x2, &s->y2);
             }
-            else if (s->type == CIRCLE) {
+            else if (s->type == 3) {
                 printf("Enter center x y and radius: ");
-                scanf("%d %d %d", &s->data.circle.cx, &s->data.circle.cy, &s->data.circle.radius);
+                scanf("%d %d %d", &s->x1, &s->y1, &s->radius);
             }
-            else if (s->type == TRIANGLE) {
+            else if (s->type == 4) {
                 printf("Enter x1 y1 x2 y2 x3 y3: ");
-                scanf("%d %d %d %d %d %d", &s->data.triangle.x1, &s->data.triangle.y1, &s->data.triangle.x2, &s->data.triangle.y2, &s->data.triangle.x3, &s->data.triangle.y3);
+                scanf("%d %d %d %d %d %d", &s->x1, &s->y1, &s->x2, &s->y2, &s->x3, &s->y3);
             }
             printf("Object modified.\n\n");
         }
@@ -270,19 +237,14 @@ int main() {
             for (int i = 0; i < shapeCount; i++) {
                 Shape s = shape[i];
                 printf("Index %d: ", i);
-                switch (s.type) {
-                    case LINE:
-                        printf("Line from (%d, %d) to (%d, %d)\n", s.data.line.x1, s.data.line.y1, s.data.line.x2, s.data.line.y2);
-                        break;
-                    case RECTANGLE:
-                        printf("Rectangle from (%d, %d) to (%d, %d)\n", s.data.rectangle.x1, s.data.rectangle.y1, s.data.rectangle.x2, s.data.rectangle.y2);
-                        break;
-                    case CIRCLE:
-                        printf("Circle center (%d, %d) with radius %d\n", s.data.circle.cx, s.data.circle.cy, s.data.circle.radius);
-                        break;
-                    case TRIANGLE:
-                        printf("Triangle vertices (%d, %d), (%d, %d), (%d, %d)\n", s.data.triangle.x1, s.data.triangle.y1, s.data.triangle.x2, s.data.triangle.y2, s.data.triangle.x3, s.data.triangle.y3);
-                        break;
+                if (s.type == 1) {
+                    printf("Line from (%d, %d) to (%d, %d)\n", s.x1, s.y1, s.x2, s.y2);
+                } else if (s.type == 2) {
+                    printf("Rectangle from (%d, %d) to (%d, %d)\n", s.x1, s.y1, s.x2, s.y2);
+                } else if (s.type == 3) {
+                    printf("Circle center (%d, %d) with radius %d\n", s.x1, s.y1, s.radius);
+                } else if (s.type == 4) {
+                    printf("Triangle vertices (%d, %d), (%d, %d), (%d, %d)\n", s.x1, s.y1, s.x2, s.y2, s.x3, s.y3);
                 }
             }
             printf("\n");
