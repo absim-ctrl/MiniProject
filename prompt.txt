@@ -1,0 +1,44 @@
+================================================================================
+ASSIGNMENT PROMPT & SUBMISSION DETAILS: 2D CONSOLE GRAPHICS EDITOR IN C
+================================================================================
+
+--- ORIGINAL PROBLEM STATEMENT ---
+Write a 2D graphics editor using '*' and '_'.
+Write functions to draw a circle, rectangle, line, and triangle.
+You should be able to:
+- Add objects to the picture
+- Delete objects from the picture
+- Modify objects in the picture
+Use a 2D array of characters to store the picture.
+Write a function to display the picture.
+Language: C
+
+--- IMPLEMENTATION DETAILS ---
+This project implements a Console-based Vector Graphics Editor in C. 
+It uses a 2D array of size 50 (width) x 20 (height) representing a character 
+canvas buffer. Instead of drawing shapes directly and losing their boundary 
+identities, the editor keeps a shape database structure. This enables fully 
+dynamic Create, Read, Update, and Delete (CRUD) operations on shapes before 
+rendering them onto the canvas buffer.
+
+--- CORE FEATURES ---
+1. Canvas Buffer: Initialized to background character '_', rendered using '*'.
+2. Custom Coordinate Guide System: Horizontal and vertical coordinates are 
+   printed alongside the border to make it easy for users to coordinate placement.
+3. Bresenham's Line Algorithm: Efficient integer-based line calculation.
+4. Midpoint Circle Algorithm: Mathematically correct circle outline rendering.
+5. Shapes Database CRUD:
+   - Add: Interactive inputs for coordinates, width, height, radius.
+   - List: View all active shapes in memory with their properties and IDs.
+   - Modify: Re-enter shape coordinates/dimensions for any target shape ID.
+   - Delete: Remove a shape by ID, sliding memory segments to compress space.
+6. Robust User Input: Helper routines that validate integer ranges to prevent 
+   scanf buffer loops.
+
+--- COMPILATION AND RUNNING INSTRUCTIONS ---
+Compile using any standard C compiler (GCC, Clang, MSVC):
+  gcc program.c -o program.exe
+
+Run the compiled executable:
+  ./program.exe
+================================================================================
