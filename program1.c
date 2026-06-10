@@ -6,9 +6,9 @@
 #define WIDTH 80
 #define MAXSIZE 100
 
-// Flat structure representing any shape
+
 typedef struct {
-    int type; // 1: Line, 2: Rectangle, 3: Circle, 4: Triangle
+    int type; 
     int x1, y1;
     int x2, y2;
     int x3, y3;
